@@ -12,7 +12,7 @@ export default function Index() {
       <main>
         <h1>
           Welcome to{" "}
-          <a target="_blank" href="https://ismaelnascimento.com">
+          <a target="_blank" href="https://ismaelnascimento.com" rel="noreferrer">
             Manda ai!
           </a>
         </h1>
