@@ -8,9 +8,13 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Dropdown from "react-bootstrap/Dropdown";
 import Alert from "react-bootstrap/Alert";
 import { useState } from "react";
+import graphqlClient from "../../graphql/client";
+import { CREATE_POST_MUTATION } from "../../graphql/mutation";
 
 export default function FormIndex() {
   const [typePost, setTypePost] = useState("1");
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [result, setResult] = useState("");
@@ -19,12 +23,42 @@ export default function FormIndex() {
     setTypePost(value);
   }
 
-  function onCreatePost() {
-    setTypePost("1");
-    setResult("error");
-    console.log(date, time);
-    console.log(new Date(`${date}T${time}`));
-    console.log(new Date(`${date}T${time}`).getTime());
+  async function onCreatePost() {
+    if (typePost === "1" && (title === "" || body === "")) {
+      setResult("invalid fields");
+      console.log("error 1");
+      return;
+    } else if (
+      typePost === "2" &&
+      (title === "" || body === "" || date === "" || time === "")
+    ) {
+      setResult("invalid fields");
+      console.log("error 2", typePost, title, body);
+      return;
+    }
+
+    const result = await graphqlClient(CREATE_POST_MUTATION, {
+      post: {
+        title: title,
+        body: body,
+        isSchedule: typePost === "1" ? false : true,
+        datetimeSchedule:
+          typePost === "1"
+            ? ""
+            : new Date(`${date}T${time}`).getTime().toString(),
+      },
+    });
+    
+    if (result.createPost.statusCode === 200) {
+      setResult("success");
+      setTypePost("1");
+      setTitle("");
+      setBody("");
+      setDate("");
+      setTime("");
+    } else {
+      setResult("error");
+    }
   }
 
   function alertResult() {
@@ -36,7 +70,7 @@ export default function FormIndex() {
       <>
         {result && (
           <Alert variant={result === "success" ? "success" : "danger"}>
-            {result === "success" ? "Parabens" : "Fudeu"}
+            {result === "success" ? "Tudo ótimo" : "Fudeu algo"}
           </Alert>
         )}
       </>
@@ -64,6 +98,8 @@ export default function FormIndex() {
                       <Form.Control
                         type="text"
                         placeholder="Digite o titulo do seu post."
+                        value={title}
+                        onChange={(event) => setTitle(event.target.value)}
                       />
                     </Form.Group>
                   </Col>
@@ -72,7 +108,12 @@ export default function FormIndex() {
                   <Col md={12}>
                     <Form.Group className="mb-3">
                       <Form.Label>Corpo da mensagem:</Form.Label>
-                      <Form.Control as="textarea" rows={4} />
+                      <Form.Control
+                        as="textarea"
+                        rows={4}
+                        value={body}
+                        onChange={(event) => setBody(event.target.value)}
+                      />
                     </Form.Group>
                   </Col>
                 </Row>

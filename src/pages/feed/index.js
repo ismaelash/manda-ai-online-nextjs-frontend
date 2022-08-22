@@ -3,8 +3,25 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import PostCardIndex from "../../components/PostCard";
 import Button from "react-bootstrap/Button";
+import graphqlClient from "../../graphql/client";
+import { POSTS_SHOW_QUERY } from "../../graphql/query";
+import { useEffect, useState } from "react";
 
 export default function FeedIndex() {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  async function fetchData() {
+    const result = await graphqlClient(POSTS_SHOW_QUERY, {
+      datetimeLocale: new Date().getTime().toString(),
+    });
+    setPosts(result.postsShow.data.reverse());
+    console.log(result);
+  }
+
   return (
     <Container>
       <Row>
@@ -14,7 +31,9 @@ export default function FeedIndex() {
           </Button>
         </Col>
       </Row>
-      <PostCardIndex title="Micaela" body="gostosa" />
+      {posts?.map((post) => (
+        <PostCardIndex key={post.id} title={post.title} body={post.body} />
+      ))}
     </Container>
   );
 }
