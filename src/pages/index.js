@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-html-link-for-pages */
 import Head from "next/head";
 
 export default function Index() {
@@ -21,7 +22,7 @@ export default function Index() {
           <a href="/feed">
             <h2>Ir ao Feed </h2>
           </a>
-          <a href="/form">
+          <a href="/form" >
             <h2>Criar post </h2>
           </a>
         </div>
