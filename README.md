@@ -1,4 +1,5 @@
 # manda-ai-online-nextjs-frontend
+Backend: https://github.com/ismaelash/manda-ai-online-nodejs-backend
 
 ## links
 - Next.js
